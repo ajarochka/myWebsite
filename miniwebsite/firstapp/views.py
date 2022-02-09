@@ -38,17 +38,17 @@ def about(request):
     content = {
         'title': title,
     }
-    return render(request, 'firstapp/about.html', context=content)
+    return render(request, template_name='firstapp/about.html', context=content)
 
 def contactus(request):
     title = 'Please, contact us 24/7'
     content = {
         'title': title,
     }
-    return render(request, 'firstapp/contact.html', context=content)
+    return render(request, template_name='firstapp/contact.html', context=content)
 
 def get_category(request, category_id):
-    news = News.objects.filter(pk=category_id)
+    news = News.objects.filter(category=category_id)
     categories = Category.objects.order_by('title')
     category = Category.objects.get(pk=category_id)
 
@@ -56,3 +56,12 @@ def get_category(request, category_id):
                'allCategories': categories,
                'category': category}
     return render(request, 'firstapp/category.html', content)
+
+def view_news(request, news_id):
+    # try:
+    #     news = News.objects.get(pk=news_id)
+    # except News.DoesNotExist:
+    #     raise Http404('such news does not exist')
+
+    news_item = get_object_or_404(News, pk=news_id)
+    return render(request, 'firstapp/category.html', {'news': news})
