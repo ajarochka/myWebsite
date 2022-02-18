@@ -13,7 +13,7 @@ class NewsAdmin(admin.ModelAdmin):
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['id', 'title']
     list_display_links = ['id', 'title']
-    search_fields = ['title', 'category']
+    search_fields = ['title',]
 
 admin.site.register(News, NewsAdmin)
 admin.site.register(Category, CategoryAdmin)

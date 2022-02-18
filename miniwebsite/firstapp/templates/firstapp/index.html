@@ -9,7 +9,7 @@
       {% for i in newsAll%}
       <div class="card mb-3">
         <div class="card-header">
-          News Category: <a href="{% url 'category' i.category.pk %}">{{ i.category }}</a>
+          News Category: <a href="{% i.category.get_absolute_url %}">{{ i.category }}</a>
 <!--          {{ '1234567'| filesizeformat }}-->
 <!--          {{i.count}}-->
         </div>
@@ -34,7 +34,7 @@
         </div>
       </div>
     {% endfor %}
-    </div>
+
 {% endblock %}
 
 

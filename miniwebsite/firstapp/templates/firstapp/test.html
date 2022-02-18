@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}
+    Test page
+{% endblock %}
+
+{% block sidebar %}
+    <div class="list-group">
+        {% include 'incl/_sidebar.html' %}
+    </div>
+{% endblock %}
+
+{% block content %}
+    {% for name in page_obj.object_list %}
+        {{ name }}
+    {% endfor %}
+
+{% endblock %}

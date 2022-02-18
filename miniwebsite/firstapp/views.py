@@ -1,16 +1,84 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse, Http404
+
+from django.views.generic import ListView, DetailView, CreateView
+from django.urls import reverse_lazy
+from .utils import MyMixin
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 # from requests import Response
-from django.http import HttpResponse
 from .models import *
+from .forms import *
+
 # Create your views here.
+
+def test(request):
+    objects = ['john1', 'paul2', 'george3', 'ringo4', 'john5', 'paul6', 'george7', 'ringo8']
+    paginator = Paginator(objects, 2)   # having 2 objects per page
+    page_num = request.GET.get('page', 1)  # starting from the page 1
+    page_objects = paginator.get_page(page_num)
+
+    return render(request, 'firstapp/test.html', {'page_obj': page_objects})
+
+class HomeNews(MyMixin, ListView):
+    model = News
+    template_name = 'firstapp/home_news_list.html'
+    context_object_name = 'newsAll'
+    mixin_prop = 'hello world'
+    # extra_context = {'title': 'The Latest News'}
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.get_upper('Home Page')
+        context['mixin_prop'] = self.get_prop()
+        return context
+
+    def get_queryset(self):
+        return News.objects.filter(is_published=True).select_related('category')
+
+
+class CategoryViewNews(MyMixin, ListView):
+    model = News
+
+    template_name = 'firstapp/home_news_category.html'
+    context_object_name = 'news'
+    # extra_context = {'title': 'Category Header'}
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.get_upper(Category.objects.get(pk=self.kwargs['category_id']))
+        return context
+
+    def get_queryset(self):
+        return News.objects.filter(category_id=self.kwargs['category_id'], is_published=True)
+
+class ViewNews(MyMixin, DetailView):
+    model = News
+    # pk_url_kwarg = 'news_id'
+    context_object_name = 'news_item'
+    template_name = 'firstapp/view_detail_news.html'
+
+class CreateNews(LoginRequiredMixin, CreateView):
+    form_class = NewsForm
+    model = News
+    template_name = 'firstapp/news_adding.html'
+    success_url = reverse_lazy('home')
+    # login_url = '/admin/'
+    raise_exception = True
 
 def hello(request):
     text="""<h1>Welcome to Kyrgyzstan!</h1>"""
     return HttpResponse(text)
 
-def index(request):
-    all_news = News.objects.all()
-    sorted_news = News.objects.order_by("created_at")
+# def index(request):
+    # all_news = News.objects.all()
+    # all_news = News.objects.order_by('-created_at')
+    # content = {'newsAll': allNews,
+    #            'titleInHtml': 'The list of all news'
+    #            }
+    #
+    # sorted_news = News.objects.order_by("created_at")
 
     # res = "<h2> List of all news </h2>"
     # for news in all_news:
@@ -25,13 +93,24 @@ def index(request):
 
     # return render(request, "firstapp/index.html", {'newsAll': all_news,
     #                                                'titleInHTML': 'List of all news'})
-    categories = Category.objects.order_by('title')
-    content = {'newsAll': sorted_news,
-               'titleInHTML': 'List of all news',
-               'categories': categories
-               }
+    # categories = Category.objects.order_by('title')
+    # content = {'newsAll': sorted_news,
+    #            'titleInHTML': 'List of all news',
+    #            'categories': categories
+    #            }
 
-    return render(request, template_name="firstapp/index.html", context=content)
+    # return render(request, template_name="firstapp/index.html", context=content)
+
+# def get_category(request, category_id):
+#     news = News.objects.filter(category=category_id)
+#     categories = Category.objects.order_by('title')
+#     category = Category.objects.get(pk=category_id)
+#
+#     content = {'news': news,
+#                'allCategories': categories,
+#                'category': category}
+#     return render(request, 'firstapp/category.html', content)
+
 
 def about(request):
     title = 'Page about us. Welcome!'
@@ -45,23 +124,43 @@ def contactus(request):
     content = {
         'title': title,
     }
-    return render(request, template_name='firstapp/contact.html', context=content)
+    return render(request, template_name='firstapp/contacts.html', context=content)
 
-def get_category(request, category_id):
-    news = News.objects.filter(category=category_id)
-    categories = Category.objects.order_by('title')
-    category = Category.objects.get(pk=category_id)
 
-    content = {'news': news,
-               'allCategories': categories,
-               'category': category}
-    return render(request, 'firstapp/category.html', content)
-
-def view_news(request, news_id):
+# def view_news(request, news_id):
     # try:
     #     news = News.objects.get(pk=news_id)
     # except News.DoesNotExist:
     #     raise Http404('such news does not exist')
 
-    news_item = get_object_or_404(News, pk=news_id)
-    return render(request, 'firstapp/category.html', {'news': news})
+    # news_item = get_object_or_404(News, pk=news_id)
+    # return render(request, 'firstapp/view_news.html', {'news_item': news_item})
+
+# def add_news(request):
+#     if request.method == 'POST':
+#         form = NewsForm(request.POST)
+#
+#         if form.is_valid():
+#             print(form.cleaned_data)
+#             title = form.cleaned_data['title']
+#             content = form.cleaned_data['content']
+#             News.objects.create(**form.cleaned_data)
+#             return redirect('home')
+#     else:
+#         form = NewsForm()
+#
+#     return render(request, 'firstapp/add_news.html', {'form': form})
+
+def get_queryset(self):
+    return News.objects.filter(is_published = True).select_related('category')
+
+# class HomeNews(MyMixin, ListView):
+#     mixin_prop = 'hello world'
+#
+#     def context_data(self):
+#         context = super().get_context_data(**kwargs)
+#         context['title'] = Category.objects.get(pk = self.kwargs)
+#         # context['title'] = self.get_upper('Homepage')
+#         context['mixin_prop'] = self.get_prop()
+
+

@@ -1,37 +1,40 @@
 {% extends 'base.html' %}
 {% block sidebar %}
-  <div class="col-md-4">
-      <div class="list-group">
-        {% for item in categories %}
-        <a href="{% url 'category' item.pk %}" class="list-group-item list-group-item-action " aria-current="true">
-          {{item.title}}
-        </a>
-        {% endfor %}
-      </div>
-    </div>
+{% include 'incl/_sidebar.html' %}
+<!--  <div class="col-md-4">-->
+<!--      <div class="list-group">-->
+<!--        {% for item in categories %}-->
+<!--        <a href="{% url 'category' item.pk %}" class="list-group-item list-group-item-action " aria-current="true">-->
+<!--          {{item.title}}-->
+<!--        </a>-->
+<!--        {% endfor %}-->
+<!--      </div>-->
+<!--    </div>-->
 {% endblock %}
 
 {% block content %}
   <div class="col-md-8">
 <!--    this news timeline is reversed. if remove the word "reversed" it will go in the creation order asc-->
-      {% for i in newsAll %}
+      {% for i in news %}
       <div class="card mb-3">
-        <div class="card-header {% cycle 'text-success' 'text-danger' %}">
-          News Category: {{ i.category }}
+        <div class="card-header">
+          News Category: <a href="{% url 'category' i.category.pk %}">{{ i.category }}</a>
         </div>
+
         <div class="card-body">
           <div class="media">
-            {% if i.photo %}
-              <img src="{{i.photo.url}}" width="350" class="mr-3">
-            {% else %}
-              <img src="https://cdn1.vectorstock.com/i/1000x1000/50/20/no-photo-or-blank-image-icon-loading-images-vector-37375020.jpg"
-                   width="350" class="mr-3">
-            {% endif %}
-            <div class="media-body">
-              <h5 class="card-title">{{forloop.counter}} {{i.title}}</h5>
-              <p class="card-text">{{i.content|linebreaks}}</p>
-              <a href="#" class="btn btn-primary">Read now</a>
-            </div>
+              <div class="media-body">
+                {% if i.photo %}
+                    <img src="{{i.photo.url}}" width="350">
+                {% else %}
+                    <img src="https://cdn1.vectorstock.com/i/1000x1000/50/20/no-photo-or-blank-image-icon-loading-images-vector-37375020.jpg"
+                         width="350">
+                {% endif %}
+
+                <h5 class="card-title">{% cycle 'text-success' 'text-danger' %} {{ i.title }}</h5>
+                <p class="card-text">{{ i.content|linebreaksbr }}</p>
+                <a href="#" class="btn btn-primary">Read now</a>
+              </div>
           </div>
         </div>
         <div class="card-footer text-muted">
