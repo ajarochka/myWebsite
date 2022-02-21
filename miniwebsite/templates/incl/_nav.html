@@ -25,10 +25,17 @@
 <!--        </li>-->
         {% if request.user.is_authenticated %}
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="{% url 'add_news' %}">Добавить новость</a>
+          <a class="nav-link active" aria-current="page" href="{% url 'add_news' %}">Add news</a>
         </li>
       {% endif %}
       </ul>
+      <span class="navbar-text">
+        {% if request.user.is_authenticated %}
+          Welcome to our site, {{ user.username }} | <a href="{% url 'logout' %}">Log Out</a>
+        {% else %}
+            <a href="{% url 'register' %}">Sign up  </a> | <a href="{% url 'login' %}">  Login </a>
+        {% endif %}
+      </span>
       <form class="d-flex">
         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
         <button class="btn btn-outline-success" type="submit">Search</button>

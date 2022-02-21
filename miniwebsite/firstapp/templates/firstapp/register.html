@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+
 {% block title %}
-    Mail sending
+    Register
 {% endblock %}
 
 {% block sidebar %}
@@ -10,15 +11,12 @@
 {% endblock %}
 
 {% block content %}
-<h1>Feedback form</h1>
-<form method="POST">
+    <h1>Registration page</h1>
+<form method="post">
     {% csrf_token %}
+
     {{ form.as_p }}
-    <button type="submit" class="btn btn-primary btn-block">Send email</button>
+
+    <button type="submit" class="btn btn-primary btn-block"> Sign up </button>
 </form>
 {% endblock %}
-
-
-<!--    {% for name in page_obj.object_list %}-->
-<!--        {{ name }}-->
-<!--    {% endfor %}-->

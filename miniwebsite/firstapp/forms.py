@@ -1,5 +1,39 @@
 from django import forms
 from .models import *
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.models import User
+
+
+class ContactForm(forms.Form):
+    subject = forms.CharField(label='Email subject',
+                               widget=forms.TextInput(attrs={'class': 'form_control'}))
+    content = forms.CharField(label='Message body',
+                               widget=forms.Textarea(attrs={'class': 'form_control', "rows": 10}))
+
+class UserLoginForm(AuthenticationForm):
+    username = forms.CharField(label='User name',
+                               widget=forms.TextInput(attrs={'class': 'form_control', 'autofocus': 'None'}))
+    password = forms.CharField(label='Password', widget=forms.PasswordInput(attrs={'class': 'form_control'}))
+
+
+
+class UserRegisterForm(UserCreationForm):
+    username = forms.CharField(label='User name', widget=forms.TextInput(attrs={'class': 'form_control', 'autofocus': 'None'}))
+    email = forms.EmailField(label='Email address', widget=forms.EmailInput(attrs={'class': 'form-control', "autocomplete": 'off'}))
+    password1 = forms.CharField(label='Password', widget=forms.PasswordInput(attrs={'class': 'form_control'}))
+    password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput(attrs={'class': 'form_control'}))
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
+
+        # widgets = {
+        #     'username': forms.TextInput(attrs={'class': 'form_control'}),
+        #     'email': forms.EmailInput(attrs={'class': 'form_control'}),
+        #     'password1': forms.PasswordInput(attrs={'class': 'form_control'}),
+        #     'password2': forms.PasswordInput(attrs={'class': 'form_control'}),
+        # }
+
 
 class NewsForm(forms.ModelForm):
     class Meta:

@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, Http404
 
@@ -7,25 +8,80 @@ from .utils import MyMixin
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
+from .forms import NewsForm, UserRegisterForm, UserLoginForm, ContactForm
+from django.contrib.auth import login, logout
+from django.core.mail import send_mail
+
 # from requests import Response
+# from django.contrib.auth.forms import UserCreationForm
+
 from .models import *
 from .forms import *
 
+
 # Create your views here.
+def register(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, 'Successful signup')
+            return redirect('login')
+        else:
+            messages.error(request, 'Unsuccessful signup')
+    else:
+        form = UserRegisterForm()
+    return render(request, 'firstapp/register.html', {"form": form})
+
+def user_login(request):
+    if request.method == 'POST':
+        form = UserLoginForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('home')
+    else:
+        form = UserLoginForm()
+
+    return render(request, 'firstapp/login.html', {"form": form})
+
+def user_logout(request):
+    logout(request)
+    return redirect('login')
+
+# def test(request):
+#     objects = ['john1', 'paul2', 'george3', 'ringo4', 'john5', 'paul6', 'george7', 'ringo8']
+#     paginator = Paginator(objects, 2)   # having 2 objects per page
+#     page_num = request.GET.get('page', 1)  # starting from the page 1
+#     page_objects = paginator.get_page(page_num)
+#
+#     return render(request, 'firstapp/test.html', {'page_obj': page_objects})
+
 
 def test(request):
-    objects = ['john1', 'paul2', 'george3', 'ringo4', 'john5', 'paul6', 'george7', 'ringo8']
-    paginator = Paginator(objects, 2)   # having 2 objects per page
-    page_num = request.GET.get('page', 1)  # starting from the page 1
-    page_objects = paginator.get_page(page_num)
-
-    return render(request, 'firstapp/test.html', {'page_obj': page_objects})
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            mail = send_mail(form.cleaned_data['subject'], form.cleaned_data['content'],
+                      'beishembaeva@gmail.com', ['ajarochka@gmail.com'], fail_silently=False)
+            if mail:
+                messages.success(request, 'Email is sent')
+            else:
+                messages.error(request, 'Email is NOT sent')
+            return redirect('login')
+        else:
+            messages.error(request, 'Unsuccessful signup')
+    else:
+        form = ContactForm()
+    return render(request, 'firstapp/test.html', {'form': form})
 
 class HomeNews(MyMixin, ListView):
     model = News
     template_name = 'firstapp/home_news_list.html'
     context_object_name = 'newsAll'
     mixin_prop = 'hello world'
+    paginate_by = 2
     # extra_context = {'title': 'The Latest News'}
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -36,6 +92,7 @@ class HomeNews(MyMixin, ListView):
 
     def get_queryset(self):
         return News.objects.filter(is_published=True).select_related('category')
+
 
 
 class CategoryViewNews(MyMixin, ListView):
@@ -68,8 +125,23 @@ class CreateNews(LoginRequiredMixin, CreateView):
     raise_exception = True
 
 def hello(request):
-    text="""<h1>Welcome to Kyrgyzstan!</h1>"""
+    text = """<h1>Welcome to Kyrgyzstan!</h1>"""
     return HttpResponse(text)
+
+def about(request):
+    title = 'Page about us. Welcome!'
+    content = {
+        'title': title,
+    }
+    return render(request, template_name='firstapp/about.html', context=content)
+
+def contactus(request):
+    title = 'Please, contact us 24/7'
+    content = {
+        'title': title,
+    }
+    return render(request, template_name='firstapp/contacts.html', context=content)
+
 
 # def index(request):
     # all_news = News.objects.all()
@@ -112,21 +184,6 @@ def hello(request):
 #     return render(request, 'firstapp/category.html', content)
 
 
-def about(request):
-    title = 'Page about us. Welcome!'
-    content = {
-        'title': title,
-    }
-    return render(request, template_name='firstapp/about.html', context=content)
-
-def contactus(request):
-    title = 'Please, contact us 24/7'
-    content = {
-        'title': title,
-    }
-    return render(request, template_name='firstapp/contacts.html', context=content)
-
-
 # def view_news(request, news_id):
     # try:
     #     news = News.objects.get(pk=news_id)
@@ -151,8 +208,6 @@ def contactus(request):
 #
 #     return render(request, 'firstapp/add_news.html', {'form': form})
 
-def get_queryset(self):
-    return News.objects.filter(is_published = True).select_related('category')
 
 # class HomeNews(MyMixin, ListView):
 #     mixin_prop = 'hello world'
