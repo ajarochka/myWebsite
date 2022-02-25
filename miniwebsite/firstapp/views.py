@@ -59,7 +59,7 @@ def user_logout(request):
 #     return render(request, 'firstapp/test.html', {'page_obj': page_objects})
 
 
-def test(request):
+def contactus(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
@@ -69,12 +69,12 @@ def test(request):
                 messages.success(request, 'Email is sent')
             else:
                 messages.error(request, 'Email is NOT sent')
-            return redirect('login')
+            return redirect('home')
         else:
-            messages.error(request, 'Unsuccessful signup')
+            messages.error(request, 'Unsuccessful mail sent')
     else:
         form = ContactForm()
-    return render(request, 'firstapp/test.html', {'form': form})
+    return render(request, 'firstapp/contacts.html', {'form': form})
 
     # objects = ['john1', 'paul2', 'george3', 'ringo4', 'john5', 'paul6', 'george7', 'ringo8']
     # paginator = Paginator(objects, 2)
@@ -103,7 +103,6 @@ class HomeNews(MyMixin, ListView):
 
 class CategoryViewNews(MyMixin, ListView):
     model = News
-
     template_name = 'firstapp/home_news_category.html'
     context_object_name = 'news'
     # extra_context = {'title': 'Category Header'}
@@ -141,12 +140,12 @@ def about(request):
     }
     return render(request, template_name='firstapp/about.html', context=content)
 
-def contactus(request):
-    title = 'Please, contact us 24/7'
-    content = {
-        'title': title,
-    }
-    return render(request, template_name='firstapp/contacts.html', context=content)
+# def contactus(request):
+#     title = 'Please, contact us 24/7'
+#     content = {
+#         'title': title,
+#     }
+#     return render(request, template_name='firstapp/contacts.html', context=content)
 
 
 # def index(request):
