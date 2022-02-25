@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 class ContactForm(forms.Form):
     subject = forms.CharField(label='Email subject',
-                               widget=forms.TextInput(attrs={'class': 'form_control'}))
+                               widget=forms.TextInput(attrs={'class': 'form_control', 'autocomplete': 'off'}))
     content = forms.CharField(label='Message body',
                                widget=forms.Textarea(attrs={'class': 'form_control', "rows": 10}))
 
@@ -46,7 +46,7 @@ class NewsForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'class': 'form_control', 'rows': 20}),
             'category': forms.Select(attrs={'class': 'form_control'}),
             # 'car_brand': forms.Select(attrs={'class': 'form_control'}),
-            'photo': forms.Select(attrs={'class': 'form_control'}),
+            'photo': forms.FileInput(attrs={'class': 'form_control'}),
         }
 
 # title = forms.CharField(max_length=150, label='Название новости ',

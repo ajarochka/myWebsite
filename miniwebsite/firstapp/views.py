@@ -64,7 +64,7 @@ def test(request):
         form = ContactForm(request.POST)
         if form.is_valid():
             mail = send_mail(form.cleaned_data['subject'], form.cleaned_data['content'],
-                      'beishembaeva@gmail.com', ['ajarochka@gmail.com'], fail_silently=False)
+                      'ajara.django@gmail.com', ['beishembaeva@gmail.com'], fail_silently=False)
             if mail:
                 messages.success(request, 'Email is sent')
             else:
@@ -75,6 +75,12 @@ def test(request):
     else:
         form = ContactForm()
     return render(request, 'firstapp/test.html', {'form': form})
+
+    # objects = ['john1', 'paul2', 'george3', 'ringo4', 'john5', 'paul6', 'george7', 'ringo8']
+    # paginator = Paginator(objects, 2)
+    # page_num = request.GET.get('page', 1)
+    # page_objects = paginator.get_page(page_num)
+    # return render(request, 'firstapp/test.html', {'page_obj': page_objects})
 
 class HomeNews(MyMixin, ListView):
     model = News

@@ -9,7 +9,8 @@
 
     <title>{% block title %}News from Kyrgyzstan{% endblock %}</title>
   </head>
-<body>
+
+  <body>
 
 {% include 'incl/_nav.html' %}
 <div class="container mt-3">
@@ -17,10 +18,11 @@
       <div class="col-md-4">
         {% block sidebar %}SIDEBAR{% endblock %}
       </div>
+
       <div class="col-md-8">
-          {% if messages  %}
+          {% if messages %}
             {% for message in messages  %}
-                {% if message.tags == 'error'  %}
+                {% if message.tags == 'error' %}
                     <div class="alert alert-danger" role="alert">
                         {{ message }}
                     </div>
@@ -29,45 +31,46 @@
                         {{ message }}
                     </div>
                 {% endif  %}
+      </div>
             {% endfor  %}
           {% endif  %}
+
+
+<!--      <div class="col-md-8">-->
       {% block content %}CONTENT{% endblock %}
-      </div>
-      <div class="col-md-8">
-
-
-          <nav aria-label="...">
-              <ul class="pagination">
-
-                  {% if page_obj.has_previous %}
-                  <li class="page-item">
-                    <a href="?page={{ page_obj.previous_page_number }}" class="page_link" aria-disabled="true"> Prev. page </a>
-                </li>
-                  {% endif %}
-
-                  {% for p in page_obj.paginator.page_range %}
-                        {% if page_obj.number == p %}
-                        <li class="page-item active" aria-current="page">
-                            <a class="page-link" href="?page={{ p }}">{{ p }}</a>
-<!--                        <span class="page-link">{{ p }}</span>-->
-                        </li>
-
-                        {% elif p > page_obj.number|add:-3 and p < page_obj.number|add:3 %}
-<!--                  {% else %}-->
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ p }}"> {{ p }} </a>
-                        </li>
+        </div>
+            {% if page_obj.has_other_pages %}
+                <nav aria-label="...">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a href="?page={{ page_obj.previous_page_number }}" class="page_link" aria-disabled="true"> Prev. page </a>
+                            </li>
                         {% endif %}
-                  {% endfor %}
 
-                  {% if page_obj.has_next %}
-                    <li class="page_item">
-                        <a href="?page={{ page_obj.next_page_number }}" class="page-link" aria-disabled="true">Next page</a>
-                        <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-                    </li>
-                  {% endif %}
-              </ul>
-        </nav>
+                        {% for p in page_obj.paginator.page_range %}
+                            {% if page_obj.number == p %}
+                                <li class="page-item active" aria-current="page">
+                                    <a class="page-link" href="?page={{ p }}">{{ p }}</a>
+        <!--                        <span class="page-link">{{ p }}</span>-->
+                                </li>
+                            {% elif p > page_obj.number|add:-3 and p < page_obj.number|add:3 %}
+    <!--                  {% else %}-->
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ p }}"> {{ p }} </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page_item">
+                                <a href="?page={{ page_obj.next_page_number }}" class="page-link" aria-disabled="true">Next page</a>
+                                <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
       </div>
   </div>
 </div>
